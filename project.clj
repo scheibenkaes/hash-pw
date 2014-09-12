@@ -25,4 +25,5 @@
                         :compiler {
                                    :externs ["resources/externs/react.externs.js"]
                                    :output-to "hash_pw.js"
-                                   :optimizations :advanced}}]})
+                                   :optimizations :advanced
+                                   :pretty-print false}}]})
