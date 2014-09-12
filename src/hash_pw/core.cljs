@@ -12,7 +12,7 @@
                         :md5 #(Md5.)))
 
 (def app-state (atom {:password nil
-                      :hash (-> hashes ffirst)}))
+                      :hash :sha256}))
 
 (defn encode
   ([s]
@@ -41,13 +41,15 @@
                                            :checked (om/get-state owner :view-password?)
                                            :onChange (fn [e]
                                                        (let [view? (.. e -target -checked)]
-                                                         (om/set-state! owner :view-password? view?)))} "View password")
+                                                         (om/set-state! owner :view-password? view?)))
+                                           :value "View password"} "View password")
                            (apply dom/select #js {:onChange (fn [e]
                                                               (let [hash (.. e -target -value)]
-                                                                (om/update! app :hash (keyword hash))))}
+                                                                (om/update! app :hash (keyword hash))))
+                                                  :value (name (:hash app))}
                                   (map
                                    (fn [[k v]]
-                                     (dom/option nil (name k)))
+                                     (dom/option #js {:value (name k)} (name k)))
                                    hashes))
                            ))))
 
