@@ -1,21 +1,30 @@
 (ns hash-pw.core
-  (:import [goog.crypt Sha256])
+  (:import [goog.crypt Sha256 Sha1 Md5])
   (:require [goog.crypt :as crypt]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
 (enable-console-print!)
 
-(def app-state (atom {:password nil}))
 
+(def hashes (sorted-map :sha256 #(Sha256.)
+                        :sha1 #(Sha1.)
+                        :md5 #(Md5.)))
 
-(defn encode [s]
-  (let [sha (doto (Sha256.)
-              (.update s))]
-    (-> sha
-        (.digest)
-        (crypt/byteArrayToHex))))
+(def app-state (atom {:password nil
+                      :hash (-> hashes ffirst)}))
 
+(defn encode
+  ([s]
+   (encode s (-> @app-state :hash hashes)))
+  ([s hash]
+   (println hash)
+   (when s
+     (let [sha (doto (hash)
+                 (.update s))]
+       (-> sha
+           (.digest)
+           (crypt/byteArrayToHex))))))
 
 (defn pw-input-component [app owner]
   (reify
@@ -34,6 +43,13 @@
                                            :onChange (fn [e]
                                                        (let [view? (.. e -target -checked)]
                                                          (om/set-state! owner :view-password? view?)))} "View password")
+                           (apply dom/select #js {:onChange (fn [e]
+                                                              (let [hash (.. e -target -value)]
+                                                                (om/update! app :hash (keyword hash))))}
+                                  (map
+                                   (fn [[k v]]
+                                     (dom/option nil (name k)))
+                                   hashes))
                            ))))
 
 (om/root
