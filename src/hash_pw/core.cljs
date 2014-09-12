@@ -18,7 +18,6 @@
   ([s]
    (encode s (-> @app-state :hash hashes)))
   ([s hash]
-   (println hash)
    (when s
      (let [sha (doto (hash)
                  (.update s))]
@@ -31,7 +30,7 @@
     om/IRenderState
     (render-state [_ state]
                   (dom/div nil
-                           (dom/input #js {:type (if (om/get-state owner :view-password?) "text" "password")
+                           (dom/input #js {:type (if (:view-password? state) "text" "password")
                                            :className "password"
                                            :ref "password"
                                            :placeholder "Enter password"

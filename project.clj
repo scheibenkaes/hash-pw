@@ -11,11 +11,18 @@
 
   :source-paths ["src"]
 
-  :cljsbuild { 
-    :builds [{:id "hash-pw"
-              :source-paths ["src"]
-              :compiler {
-                :output-to "hash_pw.js"
-                :output-dir "out"
-                :optimizations :none
-                :source-map true}}]})
+  :cljsbuild {
+              :builds [{:id "hash-pw"
+                        :source-paths ["src"]
+                        :compiler {
+                                   :output-to "hash_pw.js"
+                                   :output-dir "out"
+                                   :optimizations :none
+                                   :source-map true}}
+                       {:id "prod"
+                        :source-paths ["src"]
+
+                        :compiler {
+                                   :externs ["resources/externs/react.externs.js"]
+                                   :output-to "hash_pw.js"
+                                   :optimizations :advanced}}]})
